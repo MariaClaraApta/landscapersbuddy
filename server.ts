@@ -31,10 +31,19 @@ interface ShippingOptionType {
   };
 }
 
+interface ItemsType {
+  items: [
+    {
+      id: string;
+      quantity: number;
+    }
+  ];
+}
+
 app.post("/checkout", async (req: Request, res: Response) => {
   try {
     const lineItems: LineItemsType[] = [];
-    const { items } = req.body;
+    const { items } = req.body as ItemsType;
     const { shippingOption }: ShippingOptionType = req.body;
 
     if (!items || !shippingOption) {
@@ -111,7 +120,7 @@ app.post("/checkout", async (req: Request, res: Response) => {
     res.status(500).json({
       error:
         "Ocorreu um erro ao processar o checkout. Tente novamente mais tarde.",
-      details: error.message, // Adiciona detalhes do erro (opcional, remova para produção)
+      details: error, // Adiciona detalhes do erro (opcional, remova para produção)
     });
   }
 });
