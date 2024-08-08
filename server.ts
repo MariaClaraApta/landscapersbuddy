@@ -15,7 +15,7 @@ app.use(cors(corsOptions));
 app.use(express.static("public"));
 app.use(express.json());
 
-const port = 4000;
+const port = process.env.PORT || 4000;
 
 interface LineItemsType {
   price: string;
