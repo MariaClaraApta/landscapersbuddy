@@ -15,7 +15,7 @@ const corsOptions = {
 app.use((0, cors_1.default)(corsOptions));
 app.use(express_1.default.static("public"));
 app.use(express_1.default.json());
-const port = 4000;
+const port = process.env.PORT || 4000;
 app.post("/checkout", async (req, res) => {
     try {
         const lineItems = [];
@@ -26,6 +26,7 @@ app.post("/checkout", async (req, res) => {
                 .status(400)
                 .json({ error: "Itens e opção de envio são necessários." });
         }
+        console.log(shippingOption);
         let shipping_options = [
             {
                 shipping_rate_data: {
@@ -48,8 +49,10 @@ app.post("/checkout", async (req, res) => {
                 },
             },
         ];
+        console.log(shipping_options);
         if (shippingOption.state.includes("Florida") ||
             shippingOption.state.includes("Michigan")) {
+            console.log("if");
             items.forEach((item) => {
                 lineItems.push({
                     price: item.id,
@@ -61,6 +64,7 @@ app.post("/checkout", async (req, res) => {
             });
         }
         else {
+            console.log("else");
             items.forEach((item) => {
                 lineItems.push({
                     price: item.id,
@@ -68,12 +72,23 @@ app.post("/checkout", async (req, res) => {
                 });
             });
         }
+        console.log("oi");
         const session = await stripe.checkout.sessions.create({
             shipping_address_collection: {
                 allowed_countries: ["US"],
             },
             shipping_options,
             line_items: lineItems,
+            custom_fields: [
+                {
+                    key: "phoneNumber",
+                    label: {
+                        type: "custom",
+                        custom: "Phone number",
+                    },
+                    type: "text",
+                },
+            ],
             mode: "payment",
             allow_promotion_codes: true,
             success_url: "https://www.thelandscapersbuddy.com/product",
@@ -84,10 +99,9 @@ app.post("/checkout", async (req, res) => {
     }
     catch (error) {
         console.error("Erro ao criar sessão de checkout:", error);
-        // Envia uma resposta de erro com o status apropriado
         res.status(500).json({
             error: "Ocorreu um erro ao processar o checkout. Tente novamente mais tarde.",
-            details: error.message, // Adiciona detalhes do erro (opcional, remova para produção)
+            details: error,
         });
     }
 });

@@ -103,6 +103,16 @@ app.post("/checkout", async (req: Request, res: Response) => {
       },
       shipping_options,
       line_items: lineItems,
+      custom_fields: [
+        {
+          key: "phoneNumber",
+          label: {
+            type: "custom",
+            custom: "Phone number",
+          },
+          type: "text",
+        },
+      ],
       mode: "payment",
       allow_promotion_codes: true,
       success_url: "https://www.thelandscapersbuddy.com/product",
@@ -116,11 +126,10 @@ app.post("/checkout", async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Erro ao criar sessão de checkout:", error);
 
-    // Envia uma resposta de erro com o status apropriado
     res.status(500).json({
       error:
         "Ocorreu um erro ao processar o checkout. Tente novamente mais tarde.",
-      details: error, // Adiciona detalhes do erro (opcional, remova para produção)
+      details: error,
     });
   }
 });
