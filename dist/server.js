@@ -26,7 +26,6 @@ app.post("/checkout", async (req, res) => {
                 .status(400)
                 .json({ error: "Itens e opção de envio são necessários." });
         }
-        console.log(shippingOption);
         let shipping_options = [
             {
                 shipping_rate_data: {
@@ -49,10 +48,8 @@ app.post("/checkout", async (req, res) => {
                 },
             },
         ];
-        console.log(shipping_options);
         if (shippingOption.state.includes("Florida") ||
             shippingOption.state.includes("Michigan")) {
-            console.log("if");
             items.forEach((item) => {
                 lineItems.push({
                     price: item.id,
@@ -64,7 +61,6 @@ app.post("/checkout", async (req, res) => {
             });
         }
         else {
-            console.log("else");
             items.forEach((item) => {
                 lineItems.push({
                     price: item.id,
@@ -72,7 +68,6 @@ app.post("/checkout", async (req, res) => {
                 });
             });
         }
-        console.log("oi");
         const session = await stripe.checkout.sessions.create({
             shipping_address_collection: {
                 allowed_countries: ["US"],
@@ -91,7 +86,7 @@ app.post("/checkout", async (req, res) => {
             ],
             mode: "payment",
             allow_promotion_codes: true,
-            success_url: "https://www.thelandscapersbuddy.com/product",
+            success_url: "https://www.thelandscapersbuddy.com/checkout-success",
         });
         res.send(JSON.stringify({
             url: session.url,

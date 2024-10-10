@@ -115,7 +115,7 @@ app.post("/checkout", async (req: Request, res: Response) => {
       ],
       mode: "payment",
       allow_promotion_codes: true,
-      success_url: "https://www.thelandscapersbuddy.com/product",
+      success_url: "https://www.thelandscapersbuddy.com/checkout-success",
     });
 
     res.send(
