@@ -21,6 +21,7 @@ app.post("/checkout", async (req, res) => {
         const lineItems = [];
         const { items } = req.body;
         const { shippingOption } = req.body;
+        const { coupon } = req.body;
         if (!items || !shippingOption) {
             return res
                 .status(400)
@@ -85,8 +86,8 @@ app.post("/checkout", async (req, res) => {
                 },
             ],
             mode: "payment",
-            allow_promotion_codes: true,
             success_url: "https://www.thelandscapersbuddy.com/checkout-success",
+            ...(coupon && { discounts: [{ coupon }] }),
         });
         res.send(JSON.stringify({
             url: session.url,
